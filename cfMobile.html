@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html> 
+    <head> 
+    <title>Page Title</title> 
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <style>
+        h1{
+            text-align: center;
+        }
+
+    </style>
+     
+
+</head> 
+<body> 
+
+    <h1>Confirma Fácil</h1>
+
+    <div>
+        <ul id="notas" data-role="listview" data-filter="true" data-filter-placeholder="Buscar nota..." data-inset="true">
+
+        </ul>
+
+    </div>
+
+    <input id="confimar" type="button" value="Confirmar">
+
+ </body>
+
+     <script>
+        var array = [{ name: "John", value: "1"}, { name: "Alex", value: "2"},{ name: "John2", value: "3"}, { name: "Alex2", value: "4"}];
+        
+        function carregaNotas(){
+          for(var i=0; i<array.length; i++){
+             $("#notas").append("<li><a href=\"#\">" + array[i].name + "</a></li>").listview("refresh");
+          }
+        }
+
+        $(document).on('pageinit', function() {
+            carregaNotas();
+            carregaNotas();
+            $("li").on("tap",function(){
+                $(this).toggleClass("ui-btn ui-icon-check ui-btn-icon-right");
+                $(this).prop("data-theme", "b");
+                $("ul").listview("refresh");
+            })
+        })
+
+
+    </script>
+</html>
