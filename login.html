@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html> 
+    <head> 
+    <title>Confirma Fácil - Login</title> 
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <style>
+        h1{
+            text-align: center;
+        }
+
+    </style>
+     
+
+</head> 
+<body> 
+
+    <h1>Confirma Fácil</h1>
+
+    <div>
+        <label for="text-basic">Email:</label>
+        <input type="text" id="email">
+    </div>
+
+    <div>
+        <label for="password">Senha:</label>
+        <input type="password" id="senha" autocomplete="off">
+    </div>
+
+    <input id="entrar" type="button" value="Entrar">
+
+ </body>
+
+     <script>
+        function carregarNFesAjax(){
+
+          var email = $("#email").val();
+          var senha = $("#senha").val();
+          $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/gko-pcf-api/aReceber",
+            data: {email: email, senha: senha}
+
+          }).error(function(){
+            console.log("Não há conexão com a rede.")
+
+          }).done(function(data){
+            console.log(data.ajaxResult.mensagem);
+            console.log(data.ajaxResult.objetos);
+            window.open("file:///C:/Users/silvio.alonso/Desktop/cfMobile/notas.html", "_self");
+          });
+        }
+
+        $(document).on('pageinit', function() {
+            $("#entrar").on('tap', function() {
+                carregarNFesAjax();
+            })
+        })
+
+
+    </script>
+</html>

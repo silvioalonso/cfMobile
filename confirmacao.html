@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html> 
+    <head> 
+    <title>Confirma Fácil - Login</title> 
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="moment.js"></script>
+
+    <style>
+        h1{
+            text-align: center;
+        }
+
+        #btnNao {
+            float: right;
+        }
+    </style>
+     
+
+</head> 
+<body> 
+
+    <h1>Confirma Fácil</h1>
+
+    <ul id="notasSelecionadas" data-role="listview" data-inset="true"></ul>
+
+
+    <!--<input id="btnSim" type="button" value="Sim" class="ui-btn ui-icon-check ui-btn-icon-left">
+    <input id="btnNao" type="button" value="Não" class="ui-btn ui-icon-delete ui-btn-icon-left">-->
+
+    <a href="#" id="btnSim" class="ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left">Sim</a>
+    <a href="#" id="btnNao" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-right">Não</a>
+
+    <div id="teste"></div>
+
+ </body>
+
+     <script>
+
+
+        var array = [{ name: "09129290", embarcador: "Embarcador X", valor: "999,99"}, { name: "1281800", embarcador: "Embarcador Y", valor: "100,00"}, { name: "1281800", embarcador: "Embarcador Y", valor: "333,00"}];
+        
+        function carregaNotasSelecionadas(){
+            
+            $("#notasSelecionadas").append("<li data-role=\"list-divider\">"+moment().format('DD/MM/YYYY, H:mm:ss')+"<span class=\"ui-li-count\">" + array.length + "</span></li>").listview("refresh");
+
+            for(var i=0; i<array.length; i++){
+                $("#notasSelecionadas").append("<li><h3>" + array[i].name + "<p>" + array[i].embarcador + " R$" + array[i].valor +"</p></li>").listview("refresh");
+            }
+        }
+
+        $(document).on('pageinit', function() {
+            carregaNotasSelecionadas();
+        })
+
+
+    </script>
+</html>

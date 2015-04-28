@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html> 
+    <head> 
+    <title>Confirma Fácil - Login</title> 
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="moment.js"></script>
+
+    <style>
+
+        h1{
+            text-align: center;
+        }
+
+        #btnNao {
+            float: right;
+        }
+    </style>
+     
+
+</head>
+
+<body>
+
+    <div data-role="page" id="page1">
+        <div data-role="header">
+            <h1>Confirma Fácil</h1>
+        </div>
+        <div>
+            <label for="text-basic">Email:</label>
+            <input type="text" id="email">
+        </div>
+
+        <div>
+            <label for="password">Senha:</label>
+            <input type="password" id="senha" autocomplete="off">
+        </div>
+
+        <input id="entrar" type="button" value="Entrar">
+    </div>
+
+
+    <div data-role="page" id="page2">
+        <div data-role="header">
+            <h1>Confirma Fácil</h1>
+        </div>
+        <div>
+            <ul id="notas" data-role="listview" data-filter="true" data-filter-placeholder="Buscar nota..." data-inset="true">
+
+            </ul>
+
+        </div>
+
+        <input id="confirmar" type="button" value="Confirmar">
+    </div>
+
+
+    <div data-role="page" id="page3">
+        <div data-role="header">
+            <h1>Confirma Fácil</h1>
+        </div>
+        <ul id="notasSelecionadas" data-role="listview"></ul>
+
+
+        <!--<input id="btnSim" type="button" value="Sim" class="ui-btn ui-icon-check ui-btn-icon-left">
+        <input id="btnNao" type="button" value="Não" class="ui-btn ui-icon-delete ui-btn-icon-left">-->
+
+        <a href="#" id="btnSim" class="ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left" >Sim</a>
+        <a href="#" id="btnNao" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-right" data-rel="back">Não</a>
+
+        <div id="teste"></div>
+
+
+    </div>
+
+</body>
+    
+    <script type="text/javascript">
+
+        var email;
+        var senha;
+        var array = [];
+        var arraySelecionadas = [];
+        var arrayChaves = [];
+
+        function carregarNFesAjax(){
+
+          email = $("#email").val();
+          senha = $("#senha").val();
+
+          $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/gko-pcf-api/aReceber",
+            data: {email: email, senha: senha}
+
+          }).error(function(){
+            console.log("Não há conexão com a rede.")
+
+          }).done(function(data){
+            console.log(data.ajaxResult.mensagem);
+            console.log(data.ajaxResult.objetos);
+            array=data.ajaxResult.objetos;
+            page2Controller();
+          });
+        }
+
+        
+        function confirmarNFesAjax(){
+          $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/gko-pcf-api/confirmar",
+            data: {email: email, senha: senha, chaves: arrayChaves}
+
+          }).error(function(){
+            console.log("Não há conexão com a rede.")
+
+          }).done(function(data){
+            console.log(data.ajaxResult.mensagem);
+            console.log(data);
+            console.log(data.ajaxResult.objetos);
+            console.log("done");
+          });
+        }
+
+
+        function carregaNotas(){
+          $("#notas").empty();  
+          for(var i=0; i<array.length; i++){
+             $("#notas").append("<li class=\"notas\">" + array[i].nsu + "</li>").listview("refresh");
+          }
+        }
+
+
+        function carregaNotasSelecionadas(){
+
+            $("#notasSelecionadas").empty();
+            
+            $("#notasSelecionadas").append("<li data-role=\"list-divider\">"+moment().format('DD/MM/YYYY, H:mm:ss')+"<span class=\"ui-li-count\">" + arraySelecionadas.length + "</span></li>").listview("refresh");
+
+            for(var i=0; i<arraySelecionadas.length; i++){
+                $("#notasSelecionadas").append("<li><h3>" + arraySelecionadas[i].nsu + "<p>" + arraySelecionadas[i].nomeEmbarcador + " R$" + arraySelecionadas[i].valor +"</p></li>").listview("refresh");
+            }
+        }
+
+
+        function carregaArrayNotasSelecionadas(){
+            arraySelecionadas=[];
+            for (i = 0; i < $($(".notas")).length; i++){
+                if($($(".notas")[i]).hasClass("ui-btn") == true){
+                    arraySelecionadas.push(array.slice(i,i+1)[0]);
+                }
+            }
+        }
+
+        function carregaArrayChaves(){
+            arrayChaves = [];
+            for (i in arraySelecionadas){
+                arrayChaves.push(arraySelecionadas[i].chave);
+            }
+        }
+
+
+        function page2Controller(){
+            $(":mobile-pagecontainer").pagecontainer("change", "#page2");
+            carregaNotas();
+            console.log("carregaNotas");
+            $( ":mobile-pagecontainer" ).on( "pagecontainershow", function() {
+                $(".notas").on("tap",function(){
+                    $(this).toggleClass("ui-btn ui-icon-check ui-btn-icon-right");
+                    $(this).prop("data-theme", "b");
+                    $("#notas").listview("refresh");
+                })
+                
+                $("#confirmar").on("tap", function(){
+                    carregaArrayNotasSelecionadas();
+                    page3Controller();
+                })
+            });            
+        }
+
+
+        function page3Controller(){
+            $(":mobile-pagecontainer").pagecontainer("change", "#page3");
+            carregaNotasSelecionadas();
+            $( ":mobile-pagecontainer" ).on( "pagecontainershow", function(){
+                /*$("#btnNao").on("tap", function(){
+                    $(":mobile-pagecontainer").pagecontainer("change", "#page2");
+                })*/
+                $("btnSim").on("tap", function(){
+                    carregaArrayChaves();
+                    confirmarNFesAjax();
+                })
+            })
+        }
+
+
+        $(document).on('pageinit', function() {
+            
+            $("#entrar").on('tap', function() {
+                carregarNFesAjax();
+            })
+
+
+        })
+
+    </script>
+</html>
