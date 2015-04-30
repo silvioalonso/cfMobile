@@ -13,13 +13,18 @@
 
     <style>
 
-        h1{
+        h1, h4{
             text-align: center;
         }
 
-        #btnNao {
+        #btnSim {
             float: right;
         }
+
+        #confirmar {
+            width: 100%;
+        }
+
     </style>
      
 
@@ -27,27 +32,32 @@
 
 <body>
 
+<!-- #################### pagina 1 - login -->
+
     <div data-role="page" id="page1">
-        <div data-role="header">
+        <div data-role="header" data-position="fixed">
             <h1>Confirma Fácil</h1>
         </div>
         <div>
             <label for="text-basic">Email:</label>
             <input type="text" id="email">
         </div>
-
         <div>
             <label for="password">Senha:</label>
             <input type="password" id="senha" autocomplete="off">
         </div>
-
-        <input id="entrar" type="button" value="Entrar">
+        <div>
+            <a href="#" id="entrar" data-role="button" data-transition="slideup" class"ui-btn ui-shadow ui-corner-all">Entrar</a>
+        </div>
     </div>
 
+<!-- #################### pagina 2 - notas -->
 
     <div data-role="page" id="page2">
-        <div data-role="header">
+        <div data-role="header" data-position="fixed">
+            <a href="index.html" data-transition="slideup" class="ui-btn ui-iconshadow ui-corner-all ui-icon-home ui-btn-icon-notext"></a>
             <h1>Confirma Fácil</h1>
+            <a href="#" data-transition="slideup" class="confirmar ui-btn ui-shadow ui-corner-all ui-icon-arrow-r ui-btn-icon-notext"></a>
         </div>
         <div>
             <ul id="notas" data-role="listview" data-filter="true" data-filter-placeholder="Buscar nota..." data-inset="true">
@@ -55,31 +65,47 @@
             </ul>
 
         </div>
-
-        <input id="confirmar" type="button" value="Confirmar">
+        <div data-role="footer" data-position="fixed">    
+            <a href="#" id="confirmar" data-role="button" data-transition="slideup" class"confirmar ui-btn ui-shadow ui-corner-all">Confirmar</a>
+        </div>
     </div>
 
+<!-- #################### pagina 3 - confirmação -->
 
     <div data-role="page" id="page3">
         <div data-role="header">
+            <a href="#page2" data-transition="slideup" class="ui-btn ui-shadow ui-corner-all ui-icon-arrow-l ui-btn-icon-notext"></a>
             <h1>Confirma Fácil</h1>
         </div>
         <ul id="notasSelecionadas" data-role="listview"></ul>
-
-
-        <!--<input id="btnSim" type="button" value="Sim" class="ui-btn ui-icon-check ui-btn-icon-left">
-        <input id="btnNao" type="button" value="Não" class="ui-btn ui-icon-delete ui-btn-icon-left">-->
-
-        <a href="#" id="btnSim" class="ui-btn ui-btn-inline ui-icon-check ui-btn-icon-left" >Sim</a>
-        <a href="#" id="btnNao" class="ui-btn ui-btn-inline ui-icon-delete ui-btn-icon-right" data-rel="back">Não</a>
-
-        <div id="teste"></div>
-
+        <div>
+            <h4>Deseja confirmar as notas acima?</h4>
+        </div>
+        <a href="#page2" id="btnNao" data-transition="slideup" class="ui-btn ui-btn-inline ui-corner-all ui-shadow ui-icon-delete ui-btn-icon-left">Não</a>
+        <a href="#" id="btnSim" class="ui-btn ui-btn-inline ui-corner-all ui-shadow ui-icon-check ui-btn-icon-right" >Sim</a>
 
     </div>
 
-</body>
-    
+<!--  ##################### dialogos -->
+
+    <div data-role="page" id="dialogo" data-close-btn="right">
+        <div data-role="header">
+            <h2>Confirma Fácil</h2>
+        </div>
+        <div role="main" class="ui-content" style="text-align:center" id="textoDialogo"></div>
+    </div>
+
+
+    <div data-role="page" id="dialogoNotasConfirmadas" data-close-btn="none">
+        <div data-role="header">
+            <h2>Confirma Fácil</h2>
+        </div>
+        <div role="main" class="ui-content" style="text-align:center">
+            <p>Notas Fiscais confirmadas com sucesso.</p>
+        </div>
+    </div>
+<!-- ############################################ -->
+
     <script type="text/javascript">
 
         var email;
@@ -87,6 +113,7 @@
         var array = [];
         var arraySelecionadas = [];
         var arrayChaves = [];
+        var objChaves = {};
 
         function carregarNFesAjax(){
 
@@ -100,12 +127,24 @@
 
           }).error(function(){
             console.log("Não há conexão com a rede.")
+            $("#textoDialogo").html("Não há conexão com a rede.")
+            $.mobile.changePage( "#dialogo", { role: "dialog" } );
 
           }).done(function(data){
             console.log(data.ajaxResult.mensagem);
-            console.log(data.ajaxResult.objetos);
-            array=data.ajaxResult.objetos;
-            page2Controller();
+            if(data.ajaxResult.codigo == 501){
+                $("#email").val(null);
+                $("#senha").val(null);
+                $("#textoDialogo").html("Usuário e senha inválidos.")
+                $.mobile.changePage( "#dialogo", { role: "dialog" } );
+
+            } else {
+                $(":mobile-pagecontainer").pagecontainer("change", "#page2", {
+                    transition: 'slideup'
+                });
+                array=data.ajaxResult.objetos;
+                carregaNotas();
+            }
           });
         }
 
@@ -114,16 +153,20 @@
           $.ajax({
             type: "POST",
             url: "http://localhost:8080/gko-pcf-api/confirmar",
-            data: {email: email, senha: senha, chaves: arrayChaves}
+            data: {email: email, senha: senha, chaves: objChaves}
 
           }).error(function(){
             console.log("Não há conexão com a rede.")
+            $("#textoDialogo").html("Não há conexão com a rede.")
+            $.mobile.changePage( "#dialogo", { role: "dialog" } );
 
           }).done(function(data){
             console.log(data.ajaxResult.mensagem);
-            console.log(data);
-            console.log(data.ajaxResult.objetos);
-            console.log("done");
+            $.mobile.changePage( "#dialogoNotasConfirmadas", { role: "dialog" } );
+            setTimeout(function() {
+                carregarNFesAjax();
+            }, 2000);
+            
           });
         }
 
@@ -131,19 +174,17 @@
         function carregaNotas(){
           $("#notas").empty();  
           for(var i=0; i<array.length; i++){
-             $("#notas").append("<li class=\"notas\">" + array[i].nsu + "</li>").listview("refresh");
+             $("#notas").append('<li class="notas"><h3>' + array[i].nsu + '    <small>' + array[i].nomeEmbarcador + '</small></h3></li>').listview("refresh");
           }
+          listviewNotasController();
         }
 
 
         function carregaNotasSelecionadas(){
-
             $("#notasSelecionadas").empty();
-            
             $("#notasSelecionadas").append("<li data-role=\"list-divider\">"+moment().format('DD/MM/YYYY, H:mm:ss')+"<span class=\"ui-li-count\">" + arraySelecionadas.length + "</span></li>").listview("refresh");
-
             for(var i=0; i<arraySelecionadas.length; i++){
-                $("#notasSelecionadas").append("<li><h3>" + arraySelecionadas[i].nsu + "<p>" + arraySelecionadas[i].nomeEmbarcador + " R$" + arraySelecionadas[i].valor +"</p></li>").listview("refresh");
+                $("#notasSelecionadas").append("<li><h3>" + arraySelecionadas[i].nsu + "</h3><p>" + arraySelecionadas[i].nomeEmbarcador + "</p><p> R$" + arraySelecionadas[i].valor +"</p></li>").listview("refresh");
             }
         }
 
@@ -157,56 +198,59 @@
             }
         }
 
-        function carregaArrayChaves(){
+        function carregaObjChaves(){
             arrayChaves = [];
+            objChaves = {};
             for (i in arraySelecionadas){
                 arrayChaves.push(arraySelecionadas[i].chave);
             }
+            objChaves.chaves = arrayChaves;
+            objChaves.email = email;
+            objChaves.senha = senha;
         }
 
-
-        function page2Controller(){
-            $(":mobile-pagecontainer").pagecontainer("change", "#page2");
-            carregaNotas();
-            console.log("carregaNotas");
-            $( ":mobile-pagecontainer" ).on( "pagecontainershow", function() {
-                $(".notas").on("tap",function(){
-                    $(this).toggleClass("ui-btn ui-icon-check ui-btn-icon-right");
-                    $(this).prop("data-theme", "b");
-                    $("#notas").listview("refresh");
-                })
-                
-                $("#confirmar").on("tap", function(){
-                    carregaArrayNotasSelecionadas();
-                    page3Controller();
-                })
-            });            
+        function listviewNotasController(){
+            $(".notas").on("tap",function(){
+                $(this).toggleClass("ui-btn ui-icon-check ui-btn-icon-right");
+                $(this).prop("data-theme", "b");
+                $("#notas").listview("refresh");
+            });
         }
 
+//-------------btns controllers
 
-        function page3Controller(){
-            $(":mobile-pagecontainer").pagecontainer("change", "#page3");
-            carregaNotasSelecionadas();
-            $( ":mobile-pagecontainer" ).on( "pagecontainershow", function(){
-                /*$("#btnNao").on("tap", function(){
-                    $(":mobile-pagecontainer").pagecontainer("change", "#page2");
-                })*/
-                $("btnSim").on("tap", function(){
-                    carregaArrayChaves();
-                    confirmarNFesAjax();
-                })
-            })
-        }
-
-
-        $(document).on('pageinit', function() {
-            
-            $("#entrar").on('tap', function() {
-                carregarNFesAjax();
-            })
-
+        $("#entrar").on('tap', function(){
+            carregarNFesAjax();
+        })
+        
+        $(".confirmar").on('tap', function(){
+            carregaArrayNotasSelecionadas();
+            if (arraySelecionadas == "") {
+                $("#textoDialogo").html("Nenhuma nota foi selecionada.")
+                $.mobile.changePage( "#dialogo", { role: "dialog" } );
+            } else {
+                $(":mobile-pagecontainer").pagecontainer("change", "#page3", {
+                    transition: 'slideup'
+                });
+            }
 
         })
 
+        $("#btnSim").on('tap', function(){
+            carregaObjChaves();
+            confirmarNFesAjax();
+
+        })
+
+//-------------pages controllers
+
+        $(document).on("pageshow","#page3",function(){
+            carregaNotasSelecionadas();
+        })
+
+
+//-------------
     </script>
+
+</body>
 </html>

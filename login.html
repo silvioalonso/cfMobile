@@ -53,9 +53,11 @@
           }).done(function(data){
             console.log(data.ajaxResult.mensagem);
             console.log(data.ajaxResult.objetos);
-            window.open("file:///C:/Users/silvio.alonso/Desktop/cfMobile/notas.html", "_self");
+            window.open("file:///C:/Users/silvio.alonso/Desktop/cfMobile/notas.html" "_self");
           });
         }
+
+        
 
         $(document).on('pageinit', function() {
             $("#entrar").on('tap', function() {
