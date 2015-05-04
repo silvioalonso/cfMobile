@@ -37,6 +37,7 @@
     <div data-role="page" id="page1">
         <div data-role="header" data-position="fixed">
             <h1>Confirma Fácil</h1>
+            <a href="#" id="btnHost" class="ui-btn ui-shadow ui-corner-all ui-icon-gear ui-btn-icon-notext"></a>
         </div>
         <div>
             <label for="text-basic">Email:</label>
@@ -102,6 +103,17 @@
         </div>
         <div role="main" class="ui-content" style="text-align:center">
             <p>Notas fiscais confirmadas com sucesso.</p>
+        </div>
+    </div>
+
+    <div data-role="page" id="dialogoHost">
+        <div data-role="header">
+            <h2>Confirma Fácil</h2>
+        </div>
+        <div role="main" class="ui-content" style="text-align:center">
+            <label for="text-basic">Host:</label>
+            <input type="text" id="host">
+            <a href="index.html" id="btnSalvaHost" data-role="button" data-transition="slideup" class"ui-btn ui-shadow ui-corner-all">Salvar Host</a>
         </div>
     </div>
 <!-- ############################################ -->
@@ -226,6 +238,7 @@
             }
         }
 
+
 //-------------btns controllers
 
         $("#entrar").on('tap', function(){
@@ -251,12 +264,20 @@
 
         })
 
+        $("#btnHost").on('tap', function(){
+            $("#host").val(localStorage.getItem("hostCF"));
+            $.mobile.changePage( "#dialogoHost", { role: "dialog" } );
+        })
+
+        $("#btnSalvaHost").on('tap', function(){
+            localStorage.setItem("hostCF", $("#host").val());
+        })
+
 //-------------pages controllers
 
         $(document).on("pageshow","#page3",function(){
             carregaNotasSelecionadas();
         })
-
 
 //-------------
     </script>
