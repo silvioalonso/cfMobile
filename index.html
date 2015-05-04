@@ -101,7 +101,7 @@
             <h2>Confirma Fácil</h2>
         </div>
         <div role="main" class="ui-content" style="text-align:center">
-            <p>Notas Fiscais confirmadas com sucesso.</p>
+            <p>Notas fiscais confirmadas com sucesso.</p>
         </div>
     </div>
 <!-- ############################################ -->
@@ -135,7 +135,7 @@
             if(data.ajaxResult.codigo == 501){
                 $("#email").val(null);
                 $("#senha").val(null);
-                $("#textoDialogo").html("Usuário e senha inválidos.")
+                $("#textoDialogo").html("Login inválido.")
                 $.mobile.changePage( "#dialogo", { role: "dialog" } );
 
             } else {
@@ -217,10 +217,19 @@
             });
         }
 
+        function validarCamposLogin(){
+            if($("#email").val() == "" || $("#senha").val() == ""){
+                $("#textoDialogo").html("Os campos Usuário e Senha são obrigatórios")
+                $.mobile.changePage( "#dialogo", { role: "dialog" } );
+            } else{
+                carregarNFesAjax();
+            }
+        }
+
 //-------------btns controllers
 
         $("#entrar").on('tap', function(){
-            carregarNFesAjax();
+            validarCamposLogin();
         })
         
         $(".confirmar").on('tap', function(){
