@@ -7,6 +7,8 @@
     <meta charset="utf-8">
 
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="themes/testeCF.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="moment.js"></script>
@@ -21,9 +23,34 @@
             float: right;
         }
 
-        #confirmar {
-            width: 100%;
+        #btnNao {
+            margin: 10px;
         }
+
+        img {
+            margin:0px auto;
+            display:block;
+            width:123px;
+            height:39px;
+        }
+
+        #entrar {
+            margin-top: 70px;
+        }
+
+        .margin {
+            margin: 5px;
+        }
+
+ /*       #page1, #page2, #page3 {
+            background: url(fundo.JPG) no-repeat center center fixed; 
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-size:100% 100%;
+        }
+*/
 
     </style>
      
@@ -36,19 +63,21 @@
 
     <div data-role="page" id="page1">
         <div data-role="header" data-position="fixed">
-            <h1>Confirma Fácil</h1>
-            <a href="#" id="btnHost" class="ui-btn ui-shadow ui-corner-all ui-icon-gear ui-btn-icon-notext"></a>
+            <img src="logoCF.png">
+            <a href="#" id="btnHost" class="ui-btn-right ui-btn ui-shadow ui-corner-all ui-icon-gear ui-btn-icon-notext"></a>
         </div>
-        <div>
-            <label for="text-basic">Email:</label>
-            <input type="text" id="email">
-        </div>
-        <div>
-            <label for="password">Senha:</label>
-            <input type="password" id="senha" autocomplete="off">
-        </div>
-        <div>
-            <a href="#" id="entrar" data-role="button" data-transition="slideup" class"ui-btn ui-shadow ui-corner-all">Entrar</a>
+        <div class="margin">
+            <div>
+                <label for="text-basic">Email:</label>
+                <input type="text" id="email">
+            </div>
+            <div>
+                <label for="password">Senha:</label>
+                <input type="password" id="senha" autocomplete="off">
+            </div>
+            <div>
+                <a href="#" id="entrar" data-role="button" data-transition="slideup" class"ui-btn ui-shadow ui-corner-all">Entrar</a>
+            </div>
         </div>
     </div>
 
@@ -57,18 +86,24 @@
     <div data-role="page" id="page2">
         <div data-role="header" data-position="fixed">
             <a href="index.html" data-transition="slideup" class="ui-btn ui-iconshadow ui-corner-all ui-icon-arrow-l ui-btn-icon-notext"></a>
-            <h1>Confirma Fácil</h1>
+            <img src="logoCF.png">
             <a href="#" data-transition="slideup" class="confirmar ui-btn ui-shadow ui-corner-all ui-icon-arrow-r ui-btn-icon-notext"></a>
         </div>
-        <div>
+        <div class="margin">
             <ul id="notas" data-role="listview" data-filter="true" data-filter-placeholder="Buscar nota..." data-inset="true">
 
             </ul>
-
+            <a href="#" id="confirmar" data-role="button" class="ui-btn ui-shadow ui-corner-all confirmar">Confirmar</a>
         </div>
-        <div data-role="footer" data-position="fixed">    
+  <!--        <div data-role="footer" data-position="fixed">    
             <a href="#" id="confirmar" data-role="button" data-transition="slideup" class="confirmar ui-btn ui-shadow ui-corner-all">Confirmar</a>
-        </div>
+        </div>  
+
+       <div data-role="navbar"  data-position="fixed">
+            <ul>
+                <li></li>
+            </ul>
+        </div> -->
     </div>
 
 <!-- #################### pagina 3 - confirmação -->
@@ -76,8 +111,8 @@
     <div data-role="page" id="page3">
         <div data-role="header">
             <a href="#page2" data-transition="slideup" class="ui-btn ui-shadow ui-corner-all ui-icon-arrow-l ui-btn-icon-notext"></a>
-            <h1>Confirma Fácil</h1>
-        </div>
+            <img src="logoCF.png">
+        </div class="margin">
         <ul id="notasSelecionadas" data-role="listview"></ul>
         <div>
             <h4>Deseja confirmar as notas acima?</h4>
@@ -106,14 +141,14 @@
         </div>
     </div>
 
-    <div data-role="page" id="dialogoHost">
+    <div data-role="page" id="dialogoHost" data-close-btn="right">
         <div data-role="header">
             <h2>Confirma Fácil</h2>
         </div>
-        <div role="main" class="ui-content" style="text-align:center">
+        <div role="main" class="ui-content">
             <label for="text-basic">Host:</label>
             <input type="text" id="host">
-            <a href="index.html" id="btnSalvaHost" data-role="button" data-transition="slideup" class"ui-btn ui-shadow ui-corner-all">Salvar Host</a>
+            <a href="index.html" id="btnSalvaHost" data-role="button" data-transition="slideup" class"ui-btn ui-shadow ui-corner-all">Salvar host</a>
         </div>
     </div>
 <!-- ############################################ -->
@@ -134,7 +169,7 @@
 
           $.ajax({
             type: "POST",
-            url: "http://localhost:8080/gko-pcf-api/aReceber",
+            url: "http://" + localStorage.getItem("hostCF") + "/gko-pcf-api/aReceber",
             data: {email: email, senha: senha}
 
           }).error(function(){
@@ -164,7 +199,7 @@
         function confirmarNFesAjax(){
           $.ajax({
             type: "POST",
-            url: "http://localhost:8080/gko-pcf-api/confirmar",
+            url: "http://" + localStorage.getItem("hostCF") + "/gko-pcf-api/confirmar",
             data: {email: email, senha: senha, chaves: objChaves}
 
           }).error(function(){
@@ -233,7 +268,10 @@
             if($("#email").val() == "" || $("#senha").val() == ""){
                 $("#textoDialogo").html("Os campos Usuário e Senha são obrigatórios")
                 $.mobile.changePage( "#dialogo", { role: "dialog" } );
-            } else{
+            } else if(localStorage.getItem("hostCF") == "" || localStorage.getItem("hostCF") == null){
+                $("#textoDialogo").html("Configure o IP no menu Configurações")
+                $.mobile.changePage( "#dialogo", { role: "dialog" } );                
+            }else{
                 carregarNFesAjax();
             }
         }
@@ -278,6 +316,17 @@
         $(document).on("pageshow","#page3",function(){
             carregaNotasSelecionadas();
         })
+
+        $(document).ajaxStart(function() {
+            $.mobile.loading('show');
+        });
+
+        $(document).ajaxStop(function() {
+            $.mobile.loading('hide');
+        });
+
+         
+        
 
 //-------------
     </script>
